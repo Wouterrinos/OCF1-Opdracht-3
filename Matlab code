@@ -1,0 +1,48 @@
+%%
+%Wouter van Rijkom
+%11-5-2020
+
+%%
+%Variabelen
+f_yd = 235; %[N/mm^2]
+E = 210000; %[N/mm^2]
+rho = 7850; %[kg/m^3]
+g = 9.81; %[m/s^2]
+
+k = 9;
+m = 4;
+l = 40-0.5*(k+m); %[m]
+h = 2.58; %[m]
+%d_onderboven = 0.10; %[m] begin gebaseerd op studienummer
+%d_diag = 0.08; %[m]
+s = 0.05*k+0.12*m+2; %[m]
+omega_buc = 0.75;
+A_onderboven = 8260*1e-6; %[m^2]
+A_diag = 3210*1e-6; %[m^2]
+
+%%
+%Berekeningen
+%q
+q_var = 20+5*k/(5+m); %[kN/m]
+
+F_lig = 2*l*A_onderboven*rho*g/1e3; %[kN]
+F_staand = 11*h*A_diag*rho*g/1e3; %[kN]
+F_diag = 10*sqrt((l/10)^2+h^2)*A_diag*rho*g/1e3; %[kN]
+q_eg = (F_lig+F_staand+F_diag)/l; %[kN/m}
+
+%%
+%UGT
+q_ugt = 1.2*q_eg + 1.5*q_var; %[kN/m]
+M = 1/12*q_ugt*l^2; %[kNm]
+F_n = M/h; %[kN] normaal voor de liggers
+F_v = 1/2*q_ugt*l; %[kN] normaal voor de staand/diag
+
+uc_trek_liggers = F_n/(A_onderboven*f_yd);
+uc_druk_liggers = uc_trek_liggers/omega_buc;
+uc_druk_diag = F_v/(A_diag*f_yd);
+
+%%
+%BGT
+q_bgt = q_eg+q_var; %[N/mm]
+I = 2*(79.2e4+0.5*((h*1e3)/2)^2*(A_onderboven*1e6)); %[mm^4]
+w = 1/384*q_bgt*(l*1e3)^4/(E*I); %[mm]
